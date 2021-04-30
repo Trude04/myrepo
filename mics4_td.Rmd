@@ -2,7 +2,7 @@
 title: "mics4_td"
 author: "Trude"
 date: "30-4-2021"
-output: html_document
+output: github_document
 ---
 
 ```{r setup, include=FALSE}
