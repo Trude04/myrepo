@@ -1,30 +1,107 @@
 ---
 title: "mics4_td"
 author: "Trude"
-date: "30-4-2021"
-output: github_document
+date: "28-4-2021"
+output: github_document:
+  toc: true
+  toc_depth: 3
+  number_sections: true
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+# Lao PDR: MICS Data - mics4
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
-```{r cars}
-summary(cars)
+
+
+
+
+```{r options}
+
+options(scipen = 999) # suppress scientific notion
+
 ```
 
-## Including Plots
 
-You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r packages}
+
+library(tidyverse)
+
+# library(expss) # export
+
+library(haven) 
+
+library(sjPlot)
+
+#library(sjlabelled)
+
+#library(labelled)
+
+#library(surveytoolbox) # install with #devtools::install_github("martinctc/surveytoolbox")
+
+library(lubridate) # working with dates
+
+library(survey)
+
+#library(sjmisc)
+
+#library(knitr)
+
+library(janitor)
+
+#library(survminer)
+
+library(DataExplorer)
+
+library(naniar)
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+## Data
+
+
+```{r dataset mics4}
+
+# package haven
+mics4.ch <- read_sav("./data/mics4/ch.sav")
+
+mics4.wm <- read_sav("./data/mics4/wm.sav")
+
+```
+
+### merging women to children and subset children under 3
+
+```{r merging}
+# selecting subset of variables of women's dataset
+mics4.wm_var <- subset(mics4.wm, select = c("HH1", "HH2", "LN", "MN1", "MN2A", "MN2B", "MN2C", "MN2F", "MN2G", "MN2X", "MN3"))
+
+# change variable name in women dataset in order to match with children's
+mics4.wm_var$UF4 <- mics4.wm_var$LN
+mics4.wm_var$UF4
+
+# 11258 281
+# 23937 12 
+
+
+# Merge joining variables from dataset woman to dataset children_2017 using as key variable: UF4 (mothers or caretakers line number in ch.sav).
+# Common variables used to merge are: HH1, HH2, UF4 in children, LN in women
+mics4.ch2 <- merge(mics4.ch, mics4.wm_var, by=c("HH1", "HH2", "UF4"), all.x = TRUE)
+
+mics4.ch %>% count(CAGE, IM14)
+
+#subset children under 3
+mics4.ch2 %>% filter(CAGE < 36) -> mics4.ch # 6591
+
+```
+
+```{r}
+
+```
+
